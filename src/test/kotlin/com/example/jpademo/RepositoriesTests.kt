@@ -23,6 +23,11 @@ class RepositoriesTests @Autowired constructor(
         entityManager.flush()
         val found = articleRepository.findByIdOrNull(article.id!!)
         assertThat(found).isEqualTo(article)
+
+        juergen.articles.add(article)
+        entityManager.persist(juergen)
+        val user = userRepository.findByLogin(juergen.login)
+        assertThat(user?.articles).containsExactly(article)
     }
 
     @Test
