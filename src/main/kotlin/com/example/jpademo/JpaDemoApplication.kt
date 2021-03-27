@@ -24,10 +24,10 @@ class Controller(val service: Service) {
 
         val juergen = Author("springjuergen", "Juergen", "Hoeller")
         val article = Article("Spring Framework 5.0 goes GA", "Dear Spring community ...", "Lorem ipsum", juergen)
-        juergen.articles.add(article)
+        juergen.addArticle(article)
         service.save(juergen)
 
-        service.updateContent()
+        service.replaceContent("springjuergen", "Lorem JPA")
         val allArticles: List<ArticleDTO> = service.allArticles("springjuergen")
 
         return ResponseEntity.ok(allArticles)

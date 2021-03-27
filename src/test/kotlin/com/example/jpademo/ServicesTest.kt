@@ -1,7 +1,6 @@
 package com.example.jpademo
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,30 +11,22 @@ class ServicesTest @Autowired constructor(
 ) {
 
     @Test
-    @Order(0)
-    fun init() {
+    fun all() {
         service.delete("springjuergen")
-    }
 
-    @Test
-    @Order(1)
-    fun `author with article can be created`() {
         val juergen = Author("springjuergen", "Juergen", "Hoeller")
-        val article = Article("Spring Framework 5.0 goes GA", "Dear Spring community ...", "Lorem ipsum", juergen)
-        juergen.articles.add(article)
+        juergen.addArticle(Article("Spring", "Dear Spring community ...", "Lorem ipsum", juergen))
+        juergen.addArticle(Article("JPA", "Dear JPA community ...", "Lorem ipsum", juergen))
         service.save(juergen)
-    }
 
-    @Test
-    @Order(2)
-    fun `article can be updated`() {
-        service.updateContent()
-    }
+        service.replaceContent("springjuergen", "Lorem JPA")
 
-    @Test
-    @Order(3)
-    fun `updated article can be found`() {
         val allArticles = service.allArticles("springjuergen")
-        assertThat(allArticles).containsExactly(ArticleDTO("springjuergen", "Kotlin JPA!"))
+        assertThat(allArticles).containsExactly(ArticleDTO("springjuergen", "Spring", "Lorem JPA"), ArticleDTO("springjuergen", "JPA", "Lorem JPA"))
+
+        service.deleteArticle("springjuergen", title = "JPA")
+        val articles = service.allArticles("springjuergen")
+        assertThat(articles).containsExactly(ArticleDTO("springjuergen", "Spring", "Lorem JPA"))
     }
+
 }

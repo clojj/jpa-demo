@@ -7,15 +7,15 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class Service(val authorRepository: AuthorRepository) {
 
-    fun updateContent() {
-        val user = authorRepository.findByLogin("springjuergen")
-        user?.articles?.first { it.content.contains("Lorem") }?.content = "Kotlin JPA!"
+    fun replaceContent(login: String, content: String) {
+        val author = authorRepository.findByLogin(login)
+        author?.getArticles()?.forEach { it.content = content }
     }
 
     fun allArticles(login: String): List<ArticleDTO> {
-        val user = authorRepository.findByLogin("springjuergen")
-        return if (user != null)
-            user.articles.map { ArticleDTO(it.author.login, it.content) }
+        val author = authorRepository.findByLogin("springjuergen")
+        return if (author != null)
+            author.getArticles().map { ArticleDTO(it.author.login, it.title, it.content) }
         else emptyList()
     }
 
@@ -25,5 +25,13 @@ class Service(val authorRepository: AuthorRepository) {
 
     fun delete(login: String) {
         authorRepository.deleteByLogin(login)
+    }
+
+    fun deleteArticle(login: String, title: String) {
+        val author = authorRepository.findByLogin(login)
+        author?.let {
+            val article = author.getArticles().first { it.title == title }
+            author.removeArticle(article)
+        }
     }
 }
