@@ -6,6 +6,6 @@ interface ArticleRepository : JpaRepository<Article, Long> {
     fun findAllByOrderByAddedAtDesc(): Iterable<Article>
 }
 
-interface UserRepository : JpaRepository<User, Long> {
-    fun findByLogin(login: String): User?
+interface AuthorRepository : JpaRepository<Author, Long> {
+    fun findByLogin(login: String): Author?
 }
