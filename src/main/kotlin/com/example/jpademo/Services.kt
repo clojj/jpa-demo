@@ -22,4 +22,8 @@ class Service(val authorRepository: AuthorRepository) {
     fun save(author: Author) {
         authorRepository.save(author)
     }
+
+    fun delete(login: String) {
+        authorRepository.deleteByLogin(login)
+    }
 }

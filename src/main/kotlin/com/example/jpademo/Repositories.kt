@@ -8,4 +8,5 @@ interface ArticleRepository : JpaRepository<Article, Long> {
 
 interface AuthorRepository : JpaRepository<Author, Long> {
     fun findByLogin(login: String): Author?
+    fun deleteByLogin(login: String)
 }
