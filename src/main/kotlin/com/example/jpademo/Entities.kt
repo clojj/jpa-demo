@@ -1,10 +1,7 @@
 package com.example.jpademo
 
 import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.ManyToOne
+import javax.persistence.*
 
 @Entity
 class Article(
@@ -22,5 +19,6 @@ class User(
     var firstname: String,
     var lastname: String,
     var description: String? = null,
+    @OneToMany var articles: MutableList<Article> = mutableListOf(),
     @Id @GeneratedValue var id: Long? = null
 )
