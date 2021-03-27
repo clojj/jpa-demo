@@ -13,7 +13,7 @@ class Service(val authorRepository: AuthorRepository) {
     }
 
     fun allArticles(login: String): List<ArticleDTO> {
-        val author = authorRepository.findByLogin("springjuergen")
+        val author = authorRepository.findByLogin(login)
         return if (author != null)
             author.getArticles().map { ArticleDTO(it.author.login, it.title, it.content) }
         else emptyList()

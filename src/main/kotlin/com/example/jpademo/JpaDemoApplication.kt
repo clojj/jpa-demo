@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 @SpringBootApplication
@@ -19,16 +20,16 @@ fun main(args: Array<String>) {
 @RestController
 class Controller(val service: Service) {
 
-    @GetMapping
-    fun doIt(): ResponseEntity<List<ArticleDTO>> {
+    @GetMapping(path = ["/author/{login}"])
+    fun doIt(@PathVariable login: String): ResponseEntity<List<ArticleDTO>> {
 
-        val juergen = Author("springjuergen", "Juergen", "Hoeller")
-        val article = Article("Spring Framework 5.0 goes GA", "Dear Spring community ...", "Lorem ipsum", juergen)
-        juergen.addArticle(article)
-        service.save(juergen)
+        val author = Author(login, "Juergen", "Hoeller")
+        val article = Article("Spring Framework 5.0 goes GA", "Dear Spring community ...", "Lorem ipsum", author)
+        author.addArticle(article)
+        service.save(author)
 
-        service.replaceContent("springjuergen", "Lorem JPA")
-        val allArticles: List<ArticleDTO> = service.allArticles("springjuergen")
+        service.replaceContent(login, "Lorem JPA")
+        val allArticles: List<ArticleDTO> = service.allArticles(login)
 
         return ResponseEntity.ok(allArticles)
     }

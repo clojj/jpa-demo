@@ -1,5 +1,6 @@
 package com.example.jpademo
 
+import org.hibernate.annotations.NaturalId
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -7,6 +8,7 @@ import javax.persistence.*
 
 @Entity
 class Author(
+    @Column(unique = true)
     var login: String,
     var firstname: String,
     var lastname: String,
