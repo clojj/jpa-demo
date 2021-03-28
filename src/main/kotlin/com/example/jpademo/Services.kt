@@ -7,6 +7,12 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class Service(val authorRepository: AuthorRepository) {
 
+    fun findAuthorByLogin(login: String) =
+        authorRepository.findByLogin(login)
+
+    fun findAuthorCommentsByLogin(login: String) =
+        authorRepository.findByLogin(login)?.getComments()?.map { CommentDTO(it.content) }
+
     fun replaceContent(login: String, content: String) {
         val author = authorRepository.findByLogin(login)
         author?.getArticles()?.forEach { it.content = content }
