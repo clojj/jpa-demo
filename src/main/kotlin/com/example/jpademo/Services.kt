@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class Service(val authorRepository: AuthorRepository) {
+class Service(val authorRepository: AuthorRepository, val authorViewRepository: AuthorViewRepository) {
 
     fun findAuthorByLogin(login: String) =
         authorRepository.findByLogin(login)
@@ -40,4 +40,7 @@ class Service(val authorRepository: AuthorRepository) {
             author.removeArticle(article)
         }
     }
+
+    fun allAuthors(): List<AuthorView> =
+        authorViewRepository.findAll()
 }

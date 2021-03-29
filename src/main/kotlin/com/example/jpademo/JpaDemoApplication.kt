@@ -33,4 +33,14 @@ class Controller(val service: Service) {
 
         return ResponseEntity.ok(allArticles)
     }
+
+    // TODO AuthorViewDTO
+
+    @GetMapping(path = ["/authors"])
+    fun authors(): ResponseEntity<List<AuthorView>> {
+
+        val allAuthors = service.allAuthors()
+
+        return ResponseEntity.ok(allAuthors)
+    }
 }
