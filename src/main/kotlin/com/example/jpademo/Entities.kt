@@ -1,12 +1,16 @@
 package com.example.jpademo
 
 import java.time.LocalDateTime
+import java.util.*
 import javax.persistence.*
 
-// TODO equals by id ?
+// TODO generic onetomany getter, add, remove ?
 
+// assigned identifier: login
+// https://vladmihalcea.com/the-best-way-to-implement-equals-hashcode-and-tostring-with-jpa-and-hibernate/
 @Entity
 class Author(
+    // @NaturalId
     @Column(unique = true)
     var login: String,
     var firstname: String,
@@ -45,8 +49,6 @@ class Author(
         article.author = this
     }
 
-    // TODO generic getter, add, remove
-
     fun getComments() = comments
 
     fun addComment(comment: Comment) {
@@ -58,8 +60,25 @@ class Author(
         comments.remove(comment)
         comment.author = this
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Author
+
+        if (login != other.login) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hashCode(login)
+    }
 }
 
+// db-generated identifier
+// https://vladmihalcea.com/the-best-way-to-implement-equals-hashcode-and-tostring-with-jpa-and-hibernate/
 @Entity
 class Article(
     var title: String,
