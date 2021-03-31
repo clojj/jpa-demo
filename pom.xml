@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -66,12 +64,41 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.7.1</version>
         </dependency>
+        <dependency>
+            <scope>runtime</scope>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.3.1</version>
+        </dependency>
     </dependencies>
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.2.0</version>
+                <configuration>
+                    <changeLogFile>src/main/resources/db/migration/db.changelog-master.xml</changeLogFile>
+                    <url>jdbc:sqlserver://localhost:1433</url>
+                    <username>SA</username>
+                    <password>sqlserver2019!</password>
+                    <!--set values for Liquibase properties and settings
+                    for example, the location of a properties file to use-->
+                    <!--<propertyFile>liquibase.properties</propertyFile>-->
+                </configuration>
+                <dependencies>
+                    <!--set up any dependencies for Liquibase to function in your
+                    environment for example, a database-specific plugin-->
+                    <dependency>
+                        <groupId>org.liquibase.ext</groupId>
+                        <artifactId>liquibase-mssql</artifactId>
+                        <version>4.2.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

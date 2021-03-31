@@ -110,8 +110,9 @@ class Article(
     }
 }
 
-data class ArticleDTO(val login: String, val title: String, val content: String)@Entity
+data class ArticleDTO(val login: String, val title: String, val content: String)
 
+@Entity
 class Comment(
     var content: String,
 

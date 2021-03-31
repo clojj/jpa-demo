@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DatabaseMigrationSettings" isCreateIndexForFk="true">
+    <database-infos>
+      <database-info>
+        <option name="enabled" value="true" />
+        <dbms-id>mssql</dbms-id>
+        <mapping-types>
+          <mapping-type>
+            <java-class>java.time.LocalDateTime</java-class>
+            <sql-type>datetime2</sql-type>
+          </mapping-type>
+        </mapping-types>
+      </database-info>
+    </database-infos>
+  </component>
+</project>
