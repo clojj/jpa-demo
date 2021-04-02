@@ -67,8 +67,5 @@
             <column name="author_id"/>
         </createIndex>
     </changeSet>
-    <changeSet id="1617219483236-10" author="jw (generated)">
-        <dropView viewName="spt_values"/>
-    </changeSet>
 
 </databaseChangeLog>

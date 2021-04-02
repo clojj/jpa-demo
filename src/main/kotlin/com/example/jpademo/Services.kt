@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class Service(val authorRepository: AuthorRepository, val authorViewRepository: AuthorViewRepository) {
+class DemoService(val authorRepository: AuthorRepository, val authorViewRepository: AuthorViewRepository) {
 
     fun findAuthorByLogin(login: String) =
         authorRepository.findByLogin(login)

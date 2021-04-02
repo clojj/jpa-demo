@@ -9,48 +9,48 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 class ServicesTest @Autowired constructor(
-    val service: Service
+    val demoService: DemoService
 ) {
 
     @Test
     fun all() {
-        service.delete("springjuergen")
+        demoService.delete("springjuergen")
 
         val juergen = Author("springjuergen", "Juergen", "Hoeller")
         juergen.addArticle(Article("Spring", "Dear Spring community ...", "Lorem ipsum", juergen))
         juergen.addArticle(Article("JPA", "Dear JPA community ...", "Lorem ipsum", juergen))
-        service.save(juergen)
+        demoService.save(juergen)
 
-        service.replaceContent("springjuergen", "Lorem JPA")
+        demoService.replaceContent("springjuergen", "Lorem JPA")
 
-        val allArticles = service.allArticles("springjuergen")
+        val allArticles = demoService.allArticles("springjuergen")
         assertThat(allArticles).containsExactly(
             ArticleDTO("springjuergen", "Spring", "Lorem JPA"),
             ArticleDTO("springjuergen", "JPA", "Lorem JPA")
         )
 
-        service.deleteArticle("springjuergen", title = "JPA")
-        val articles = service.allArticles("springjuergen")
+        demoService.deleteArticle("springjuergen", title = "JPA")
+        val articles = demoService.allArticles("springjuergen")
         assertThat(articles).containsExactly(ArticleDTO("springjuergen", "Spring", "Lorem JPA"))
     }
 
     @Test
     fun comments() {
-        service.delete("login42")
+        demoService.delete("login42")
 
         val author = Author("login42", "Juergen", "Hoeller")
         author.addArticle(Article("Spring", "Dear Spring community ...", "Lorem ipsum", author))
         author.addComment(Comment("aaaaa", author))
         author.addComment(Comment("bbbbb", author))
         author.addComment(Comment("ccccc", author))
-        service.save(author)
+        demoService.save(author)
 
-        val author42 = service.findAuthorByLogin("login42")
+        val author42 = demoService.findAuthorByLogin("login42")
         assertThrows<LazyInitializationException> {
             println(author42?.getComments())
         }
 
-        val author42withComments = service.findAuthorCommentsByLogin("login42")
+        val author42withComments = demoService.findAuthorCommentsByLogin("login42")
         assertThat(author42withComments).containsExactly(CommentDTO("aaaaa"), CommentDTO("bbbbb"), CommentDTO("ccccc"))
     }
 

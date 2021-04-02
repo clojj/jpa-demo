@@ -81,7 +81,7 @@
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>4.2.0</version>
                 <configuration>
-                    <changeLogFile>src/main/resources/db/migration/db.changelog-master.xml</changeLogFile>
+                    <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
                     <url>jdbc:sqlserver://localhost:1433</url>
                     <username>SA</username>
                     <password>sqlserver2019!</password>
