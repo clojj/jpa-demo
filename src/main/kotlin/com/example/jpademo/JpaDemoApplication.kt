@@ -54,6 +54,7 @@ class Controller(val demoService: DemoService, val subscriptionService: Subscrip
         demoService.addComment(addComment.login, addComment.content)
     }
 
+    // SSE standard only allows 'text/event-stream' !
     @GetMapping(value = ["/subscribe"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     private fun subscribeToMovie(): Subscriber = subscriptionService.subscribe(Subscriber())
 
