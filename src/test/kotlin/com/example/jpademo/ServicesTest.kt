@@ -40,9 +40,9 @@ class ServicesTest @Autowired constructor(
 
         val author = Author("login42", "Juergen", "Hoeller")
         author.addArticle(Article("Spring", "Dear Spring community ...", "Lorem ipsum", author))
-        author.addComment(Comment("aaaaa", author))
-        author.addComment(Comment("bbbbb", author))
-        author.addComment(Comment("ccccc", author))
+        author.addComment("aaaaa")
+        author.addComment("bbbbb")
+        author.addComment("ccccc")
         demoService.save(author)
 
         val author42 = demoService.findAuthorByLogin("login42")

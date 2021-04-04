@@ -5,16 +5,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.Banner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 @SpringBootApplication
-@EnableScheduling
 class JpaDemoApplication
 
 fun main(args: Array<String>) {
@@ -23,17 +22,8 @@ fun main(args: Array<String>) {
     }
 }
 
-@Service
-class CronService {
-    @Scheduled(fixedDelay = 10000)
-    fun taskAssignment() {
-        val log: Logger = LoggerFactory.getLogger("Task Assignment")
-        log.info("assign...")
-    }
-}
-
 @RestController
-class Controller(val demoService: DemoService) {
+class Controller(val demoService: DemoService, val subscriptionService: SubscriptionService) {
 
     @GetMapping(path = ["/author/{login}"])
     fun doIt(@PathVariable login: String): ResponseEntity<List<ArticleDTO>> {
@@ -58,4 +48,17 @@ class Controller(val demoService: DemoService) {
 
         return ResponseEntity.ok(allAuthors)
     }
+
+    @PostMapping(path = ["/comment"])
+    fun addComment(@RequestBody addComment: AddComment) {
+        demoService.addComment(addComment.login, addComment.content)
+    }
+
+    @GetMapping(value = ["/subscribe"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    private fun subscribeToMovie(): Subscriber = subscriptionService.subscribe(Subscriber())
+
 }
+
+data class AddComment(val login: String, val content: String)
+
+class Subscriber : SseEmitter(Long.MAX_VALUE)

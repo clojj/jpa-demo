@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="content"></div>
+<script>
+    var source = new EventSource("subscribe");
+    source.onmessage = function (e) {
+        console.log('New message is received');
+        const content = `New event added: ${e.data}<br>`;
+        document.getElementById("content").innerHTML += content;
+    }
+</script>
+</body>
+</html>

@@ -1,17 +1,25 @@
 package com.example.jpademo
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.IOException
 
 @Service
 @Transactional
-class DemoService(val authorRepository: AuthorRepository, val authorViewRepository: AuthorViewRepository) {
+class DemoService(val authorRepository: AuthorRepository, val authorViewRepository: AuthorViewRepository, val subscriptionService: SubscriptionService) {
 
     fun findAuthorByLogin(login: String) =
         authorRepository.findByLogin(login)
 
     fun findAuthorCommentsByLogin(login: String) =
         authorRepository.findByLogin(login)?.getComments()?.map { CommentDTO(it.content) }
+
+    fun addComment(login: String, content: String) {
+        authorRepository.findByLogin(login)?.addComment(content)
+        subscriptionService.notifySubscribers("comment added $content")
+    }
 
     fun replaceContent(login: String, content: String) {
         val author = authorRepository.findByLogin(login)
@@ -43,4 +51,40 @@ class DemoService(val authorRepository: AuthorRepository, val authorViewReposito
 
     fun allAuthors(): List<AuthorView> =
         authorViewRepository.findAll()
+}
+
+interface SubscriptionService {
+
+    fun subscribe(subscriber: Subscriber): Subscriber
+
+    fun notifySubscribers(message: String)
+}
+
+@Service
+class DefaultSubscriptionService : SubscriptionService {
+
+    companion object {
+        val logger: Logger = LoggerFactory.getLogger(DefaultSubscriptionService::class.java)
+        val subscribers: MutableSet<Subscriber> = hashSetOf()
+    }
+
+    override fun subscribe(subscriber: Subscriber): Subscriber {
+        subscribers.add(subscriber)
+        return subscriber
+    }
+
+    override fun notifySubscribers(message: String) {
+        try {
+            subscribers.forEach { subscriber ->
+                subscriber.send(message)
+                subscriber.onError { error ->
+                    logger.info("Seems the subscriber has already dropped out. Remove it from the list")
+                    subscriber.completeWithError(error)
+                    subscribers.remove(subscriber)
+                }
+            }
+        } catch (ioException: IOException) {
+            logger.warn("Failed to notify suscriber about ", message)
+        }
+    }
 }
