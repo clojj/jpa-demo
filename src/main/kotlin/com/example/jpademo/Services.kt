@@ -53,7 +53,8 @@ class DemoService(
     }
 
     fun allAuthors(): List<AuthorView> =
-        authorViewRepository.findAll()
+        // TODO ehcache
+        authorViewRepository.findAllAuthors()
 }
 
 interface SubscriptionService {
