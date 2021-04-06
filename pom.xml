@@ -15,6 +15,12 @@
         <java.version>11</java.version>
         <kotlin.version>1.4.32</kotlin.version>
     </properties>
+    <repositories>
+        <repository>
+            <id>konform</id>
+            <url>https://dl.bintray.com/konform-kt/konform</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -69,6 +75,16 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <version>4.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.michael-bull.kotlin-result</groupId>
+            <artifactId>kotlin-result-jvm</artifactId>
+            <version>1.1.11</version>
+        </dependency>
+        <dependency>
+            <groupId>io.konform</groupId>
+            <artifactId>konform-jvm</artifactId>
+            <version>0.3.0-RC1</version>
         </dependency>
     </dependencies>
 

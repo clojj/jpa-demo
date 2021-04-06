@@ -1,14 +1,18 @@
 package com.example.jpademo
 
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.mapEither
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.transaction.interceptor.TransactionAspectSupport
 
 @Service
 @Transactional
-class DemoService(val authorRepository: AuthorRepository, val authorViewRepository: AuthorViewRepository, val subscriptionService: SubscriptionService) {
+class DemoService(
+    val authorRepository: AuthorRepository,
+    val authorViewRepository: AuthorViewRepository
+) {
 
     fun findAuthorByLogin(login: String) =
         authorRepository.findByLogin(login)
@@ -18,7 +22,6 @@ class DemoService(val authorRepository: AuthorRepository, val authorViewReposito
 
     fun addComment(login: String, content: String) {
         authorRepository.findByLogin(login)?.addComment(content)
-        subscriptionService.notifySubscribers("comment added $content")
     }
 
     fun replaceContent(login: String, content: String) {
@@ -57,7 +60,7 @@ interface SubscriptionService {
 
     fun subscribe(subscriber: Subscriber): Subscriber
 
-    fun notifySubscribers(message: String)
+    fun notifySubscribers(message: String): Result<Boolean, DomainError>
 }
 
 @Service
@@ -73,8 +76,8 @@ class DefaultSubscriptionService : SubscriptionService {
         return subscriber
     }
 
-    override fun notifySubscribers(message: String) {
-        try {
+    override fun notifySubscribers(message: String): Result<Boolean, DomainError> =
+        com.github.michaelbull.result.runCatching {
             subscribers.forEach { subscriber ->
                 subscriber.send(message)
                 subscriber.onError { error ->
@@ -83,8 +86,5 @@ class DefaultSubscriptionService : SubscriptionService {
                     subscribers.remove(subscriber)
                 }
             }
-        } catch (throwable: Throwable) {
-            logger.warn("Failed to notify suscriber about ", message)
-        }
-    }
+        }.mapEither({ true }) { GeneralError(it) }
 }

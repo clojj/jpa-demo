@@ -51,9 +51,9 @@ class Author(
 
     fun getComments() = comments
 
-    fun addComment(content: String) {
+    fun addComment(content: String) =
         comments.add(Comment(content, this))
-    }
+
 
     fun removeComment(comment: Comment) {
         comments.remove(comment)
