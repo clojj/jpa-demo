@@ -2,10 +2,16 @@ package com.example.jpademo
 
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapEither
+import com.hazelcast.nio.ObjectDataInput
+import com.hazelcast.nio.ObjectDataOutput
+import com.hazelcast.nio.serialization.StreamSerializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+
 
 @Service
 @Transactional
@@ -52,9 +58,29 @@ class DemoService(
         }
     }
 
-    fun allAuthors(): List<AuthorView> =
-        authorViewRepository.findAll()
+    @Cacheable("authorviewCache")
+    fun allAuthors(): List<AuthorDTO> =
+        authorViewRepository.findAll().map { AuthorDTO(it.login, it.lastmod, it.id!!) }
 }
+
+class AuthorDTOStreamSerializer : StreamSerializer<AuthorDTO> {
+    override fun getTypeId(): Int {
+        return 1
+    }
+
+    override fun write(output: ObjectDataOutput, authorDTO: AuthorDTO) {
+        output.writeUTF(authorDTO.login)
+        output.writeObject(authorDTO.lastmod)
+        output.writeLong(authorDTO.id)
+    }
+
+    override fun read(input: ObjectDataInput): AuthorDTO {
+        return AuthorDTO(input.readUTF(), input.readObject(), input.readLong())
+    }
+
+}
+
+data class AuthorDTO(val login: String, val lastmod: LocalDateTime, val id: Long)
 
 interface SubscriptionService {
 

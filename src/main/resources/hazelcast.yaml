@@ -1,0 +1,12 @@
+hazelcast:
+  network:
+    join:
+      multicast:
+        enabled: true
+  map:
+    default:
+      time-to-live-seconds: 30
+  serialization:
+    serializers:
+      - type-class: com.example.jpademo.AuthorDTO
+        class-name: com.example.jpademo.AuthorDTOStreamSerializer

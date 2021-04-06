@@ -10,13 +10,14 @@ import io.konform.validation.jsonschema.minLength
 import org.springframework.boot.Banner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
-import java.lang.RuntimeException
 
 @SpringBootApplication
+@EnableCaching
 class JpaDemoApplication
 
 fun main(args: Array<String>) {
@@ -45,7 +46,7 @@ class Controller(val demoService: DemoService, val subscriptionService: Subscrip
     // TODO AuthorViewDTO
 
     @GetMapping(path = ["/authors"])
-    fun authors(): ResponseEntity<List<AuthorView>> {
+    fun authors(): ResponseEntity<List<AuthorDTO>> {
 
         val allAuthors = demoService.allAuthors()
 
