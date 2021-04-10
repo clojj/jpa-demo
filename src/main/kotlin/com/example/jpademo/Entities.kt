@@ -1,5 +1,6 @@
 package com.example.jpademo
 
+import org.hibernate.annotations.NaturalId
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -10,7 +11,7 @@ import javax.persistence.*
 // https://vladmihalcea.com/the-best-way-to-implement-equals-hashcode-and-tostring-with-jpa-and-hibernate/
 @Entity
 class Author(
-    // @NaturalId
+    @NaturalId
     @Column(unique = true)
     var login: String,
     var firstname: String,
@@ -51,14 +52,16 @@ class Author(
 
     fun getComments() = comments
 
-    fun addComment(content: String) =
-        comments.add(Comment(content, this))
-
-
-    fun removeComment(comment: Comment) {
-        comments.remove(comment)
-        comment.author = this
+    fun addComment(content: String): Comment {
+        val comment = Comment(content, this)
+        if (comments.add(comment)) {
+            return comment
+        }
+        throw RuntimeException("comment not added")
     }
+
+    fun removeComment(id: Long) =
+        comments.removeIf { it.id == id }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

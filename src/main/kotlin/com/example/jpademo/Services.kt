@@ -5,13 +5,16 @@ import com.github.michaelbull.result.mapEither
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.Transactional
+
 
 @Service
 @Transactional
 class DemoService(
     val authorRepository: AuthorRepository,
-    val authorViewRepository: AuthorViewRepository
+    val authorViewRepository: AuthorViewRepository,
+    val platformTransactionManager: PlatformTransactionManager
 ) {
 
     fun findAuthorByLogin(login: String) =
@@ -20,8 +23,13 @@ class DemoService(
     fun findAuthorCommentsByLogin(login: String) =
         authorRepository.findByLogin(login)?.getComments()?.map { CommentDTO(it.content) }
 
-    fun addComment(login: String, content: String) {
-        authorRepository.findByLogin(login)?.addComment(content)
+    fun addComment(login: String, content: String): Comment {
+        val author = authorRepository.findByLogin(login) ?: throw RuntimeException("not found")
+        return author.addComment(content)
+    }
+
+    fun removeComment(login: String, id: Long) {
+        authorRepository.findByLogin(login)?.removeComment(id)
     }
 
     fun replaceContent(login: String, content: String) {

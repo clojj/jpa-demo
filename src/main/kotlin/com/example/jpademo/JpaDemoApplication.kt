@@ -1,6 +1,13 @@
 package com.example.jpademo
 
-import com.github.michaelbull.result.*
+import com.example.jpademo.UseCases.AddCommentUseCase
+import com.example.jpademo.UseCases.AddCommentUseCase.AddCommentCommand
+import com.example.jpademo.UseCases.RemoveCommentUseCase
+import com.example.jpademo.UseCases.RemoveCommentUseCase.RemoveCommentCommand
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.mapBoth
 import io.konform.validation.Invalid
 import io.konform.validation.Valid
 import io.konform.validation.Validation
@@ -14,7 +21,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
-import java.lang.RuntimeException
 
 @SpringBootApplication
 class JpaDemoApplication
@@ -26,7 +32,12 @@ fun main(args: Array<String>) {
 }
 
 @RestController
-class Controller(val demoService: DemoService, val subscriptionService: SubscriptionService) {
+class Controller(
+    val demoService: DemoService,
+    val subscriptionService: SubscriptionService,
+    val addCommentUseCase: AddCommentUseCase,
+    val removeCommentUseCase: RemoveCommentUseCase
+) {
 
     @GetMapping(path = ["/author/{login}"])
     fun doIt(@PathVariable login: String): ResponseEntity<List<ArticleDTO>> {
@@ -53,24 +64,22 @@ class Controller(val demoService: DemoService, val subscriptionService: Subscrip
     }
 
     @PostMapping(path = ["/comment"])
-    fun addComment(@RequestBody addCommentDTO: AddCommentDTO) {
-        val r: Result<Boolean, DomainError> = binding {
-            val validInput = validateAddCommentDto(addCommentDTO).bind()
-            val saved = asResult { demoService.addComment(validInput.login, validInput.content) }.bind()
-            val notified = subscriptionService.notifySubscribers("comment added ${validInput.login}").bind()
-            true
-        }
-        r.mapBoth({ "Ok" }) {
-            throw RuntimeException("$it")
+    fun addComment(@RequestBody addCommentDTO: AddCommentDTO): Long {
+        addCommentUseCase.run {
+            AddCommentCommand(addCommentDTO.login, addCommentDTO.content).runUseCase()
+        }.mapBoth({ return it }) { throw RuntimeException("$it") }
+    }
+
+    @DeleteMapping(path = ["/comment/{id}"])
+    fun removeComment(@PathVariable id: Long) {
+        removeCommentUseCase.run {
+            RemoveCommentCommand("aaa", id).runUseCase()
         }
     }
 
     // SSE standard only allows 'text/event-stream' !
     @GetMapping(value = ["/subscribe"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     private fun subscribeToMovie(): Subscriber = subscriptionService.subscribe(Subscriber())
-
-    private fun asResult(block: () -> Unit): Result<Boolean, DomainError> =
-        runCatching(block).mapEither({ true }) { GeneralError(it) }
 }
 
 data class AddCommentDTO(val login: String, val content: String)
